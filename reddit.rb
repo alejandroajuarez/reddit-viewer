@@ -59,12 +59,24 @@ begin
 
   if data["data"] && data["data"]["children"]
     posts = data["data"]["children"]
-  
-    posts.each_with_index do |data, index|
 
+    posts.each_with_index do |post, index|
+      post_data = post["data"]
+      prompt.say("\n#{index + 1}. #{post_data['title']}", color: :bright_blue) # Post's title
+      prompt.say("    Posted by: u/#{post_data['author_fullname']}") # Post's Author
+      prompt.say("    #{post_data['ups']} upvotes") # Post's Upvotes
+      prompt.say("    #{post_data['num_comments']} comments.") # Post's comments
+      prompt.say("    #{post_data['url']}") # Post's URL
+      prompt.say("    ──────────────────────") # lines for clarity
     end
+
+    # Let user select a post using TTY-prompt
+
+    selected_post = prompt.select("Select a post to see more details using your up and down arrow keys:", posts.map { |post| post['data']['title'] })
   end
+
 # Exception handling
+
 rescue HTTP::ConnectionError
   prompt.error("Cannot connect to Reddit. Please check your internet connection.")
   exit
