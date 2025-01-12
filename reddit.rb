@@ -65,7 +65,7 @@ begin
 
     posts.each_with_index do |post, index|
       post_data = post["data"]
-      prompt.say("\n#{index + 1}. #{post_data['title']}", color: :bright_blue) # Post's title
+      prompt.say("#{index + 1}. #{post_data['title']}", color: :bright_blue) # Post's title
       prompt.say("    Posted by: u/#{post_data['author_fullname']}") # Post's Author
       prompt.say("    #{post_data['ups']} upvotes") # Post's Upvotes
       prompt.say("    #{post_data['num_comments']} comments.") # Post's comments
