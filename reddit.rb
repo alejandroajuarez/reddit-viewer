@@ -83,26 +83,6 @@ begin
       selected_post_data = matching_post["data"]
       prompt.say("\nDetailed view:", color: :bright_yellow)
       prompt.say(selected_post_data["selftext"]) if selected_post_data["selftext"].to_s.length > 0
-      
-      # Shows the user the top non-stickied comment of their selected post - stickied comments tend to be bot/vote comments
-      comments_response = HTTP.headers(
-        "User-Agent" => "Mac Terminal App/1.0"
-      ).get("https://reddit.com#{selected_post_data['permalink']}.json")
- 
-      comments_data = comments_response.parse
-      if comments_data && comments_data[1] && comments_data[1]["data"]["children"].any?
-        # Find the first non-stickied comment
-        top_comment = comments_data[1]["data"]["children"].find { |comment| 
-          !comment["data"]["stickied"] && comment["data"]["body"]
-        }
- 
-        if top_comment
-          prompt.say("\nTop Comment:", color: :bright_green)
-          prompt.say("#{top_comment['data']['body']}")
-          prompt.say("By: u/#{top_comment['data']['author']} | Upvotes: #{top_comment['data']['ups']}")
-        end
-      end
-
       prompt.say("Reddit URL: https://reddit.com#{selected_post_data['permalink']}")
     else
       prompt.error("Couldn't find the selected post data")
