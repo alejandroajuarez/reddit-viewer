@@ -2,9 +2,11 @@ require "http"
 require "tty-prompt"
 require "json"
 require "tty-progressbar"
+require "launchy"
 
 prompt = TTY::Prompt.new
-bar = TTY::ProgressBar.new("Grabbing subreddits from the Ethereal Plane [:bar]", bar_format: :box, total:105)
+bar = TTY::ProgressBar.new("Grabbing subreddits from the Ethereal Plane [:bar]", bar_format: :box, total: 105)
+browser_bar = TTY::ProgressBar.new("Opening in your default browser, one moment [:bar]", bar_format: :arrow, total: 80)
 
 # Greeting Message
 welcome_banner = <<-'ASCII'
@@ -25,6 +27,7 @@ welcome_banner = <<-'ASCII'
 ASCII
 
 puts welcome_banner
+
 user_input = prompt.ask("Enter the Subreddit you want to view: ") do |q|
   q.required true
   q.modify   :down
@@ -67,12 +70,34 @@ begin
       prompt.say("    #{post_data['ups']} upvotes") # Post's Upvotes
       prompt.say("    #{post_data['num_comments']} comments.") # Post's comments
       prompt.say("    #{post_data['url']}") # Post's URL
-      prompt.say("    ──────────────────────") # lines for clarity
+      prompt.say("    " + "=" * 50)# lines for clarity
     end
 
     # Let user select a post using TTY-prompt
 
-    selected_post = prompt.select("Select a post to see more details using your up and down arrow keys:", posts.map { |post| post['data']['title'] })
+    selected_post = prompt.select("Select a post to see more details using your up and down arrow keys:", 
+    posts.map { |post| post['data']['title'] })
+
+    matching_post = posts.find { |post| post["data"]["title"] == selected_post }
+    if matching_post
+      selected_post_data = matching_post["data"]
+      prompt.say("\nDetailed view:", color: :bright_yellow)
+      prompt.say(selected_post_data["selftext"]) if selected_post_data["selftext"].to_s.length > 0
+      prompt.say("Reddit URL: https://reddit.com#{selected_post_data['permalink']}")
+    else
+      prompt.error("Couldn't find the selected post data")
+    end
+
+    # Ask the user if they want to open the post in their browser
+    if prompt.yes?("Would you like to open this post in your browser?")
+
+      105.times do
+        sleep(0.01)
+        browser_bar.advance
+      end
+      
+      Launchy.open("https://reddit.com#{selected_post_data['permalink']}")
+    end
   end
 
 # Exception handling
