@@ -4,6 +4,8 @@ require "json"
 require "tty-progressbar"
 require "launchy"
 
+# Will rework to add classes and encapsulate everything after week 1 project
+
 prompt = TTY::Prompt.new
 bar = TTY::ProgressBar.new("Grabbing subreddits from the Ethereal Plane [:bar]", bar_format: :box, total: 105)
 browser_bar = TTY::ProgressBar.new("Opening in your default browser, one moment [:bar]", bar_format: :arrow, total: 80)
